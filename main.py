@@ -22,24 +22,25 @@ from algorithms import Algorithm
 fileName = 'CustomerData.xlsx'
 sheetName = 'Retrieve CustomerCreditRiskData'
 
-# In an ideal scenario, dataplot would happen before choosing the apt algorithm
-
+# In an ideal scenario, dataplot could happen before choosing the apt algorithm
 processObj = Process(fileName, sheetName)
 
 X, y = processObj.RetriveVariablesPostManualProcessing()
 
-algorithmObj = Algorithm(True) #not persisting model for now
+# initializing the algorithm class
+algorithmObj = Algorithm(usePersistedModel = True)
 
-# print(X)
-
+# Evaluating prediction score
 [X_train, X_test, y_train, y_test], prediction = algorithmObj.KNNApproach(X, y)
 
-
+# TODO: refactor this later. Maybe introduce a Evaluate class
 accuracy = metrics.accuracy_score(y_test, prediction)
 
-print("kNN predictions :", prediction)
 
+print("kNN predictions :", prediction)
 print("kNN accuracy :", accuracy)       
 
-# seems like we can' achieve over 75% of accuracy with the kNN approach
+# seems like we can't achieve over 75% of accuracy with the kNN approach
+
+
 

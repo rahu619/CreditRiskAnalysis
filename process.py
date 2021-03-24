@@ -10,6 +10,11 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
+# For preprocessing , 
+# feature selection,
+# transformation
+# returns the predictor and target variables.
+
 class Process:
 
     fileName = ''
@@ -20,14 +25,13 @@ class Process:
         self.sheetName = sheetname
 
    # Manually choosing features that I believe
-   # that would be apt for the perfect prediction.
+   # which would be apt for the perfect prediction.
 
-    def RetriveVariablesPostManualProcessing(self):
+    def RetriveManuallyProcessedVariables(self):
 
         data = pd.read_excel(self.fileName, sheet_name = self.sheetName)
-
        # print(data.head())
-
+       
         # The independent / predictor variables
         X = data[[
             'foreignworker',
@@ -44,8 +48,7 @@ class Process:
 
        # Preprocessing step
        # Transforming the textual data to numbers
-       # as we can't feed into the algorithm
-
+       # as we can't the data directly into the algorithm
         Le = LabelEncoder()
 
        # transforming X column wise
