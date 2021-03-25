@@ -38,7 +38,7 @@ class Algorithm:
         
         # if persistence is set to true
         if self.usePersistedModel:
-            persistenceObj = Persistence('kNN');
+            persistenceObj = Persistence('KNN');
             model = persistenceObj.LoadModel()
             
             #if model doesn't exist, saving it for later use

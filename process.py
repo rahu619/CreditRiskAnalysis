@@ -8,13 +8,17 @@ Created on Wed Mar 24 10:36:08 2021
 """
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
 
-# For preprocessing , 
+# Preprocessing , 
 # feature selection,
 # transformation
-# returns the predictor and target variables.
 
+
+# returns the predictor and target variables.
 class Process:
 
     fileName = ''
@@ -23,28 +27,31 @@ class Process:
     def __init__(self, filename, sheetname):
         self.fileName = filename
         self.sheetName = sheetname
-
-   # Manually choosing features that I believe
-   # which would be apt for the perfect prediction.
-
-    def RetriveManuallyProcessedVariables(self):
-
+            
+    def RetrieveVariablesManually(self):
         data = pd.read_excel(self.fileName, sheet_name = self.sheetName)
-       # print(data.head())
+        
+        # print(data.head(n=2))
+        # print(data.dtypes)
        
-        # The independent / predictor variables
+       # The independent / predictor variables
         X = data[[
-            'foreignworker',
-            'status',
-            'credithistory',
-            'savings',
-            'employmentsince',
-            'creditamount',
-            'age',
+            # 'foreignworker',
+            'status',            
+            # 'credithistory',
+            #'savings',
+            # 'employmentsince',
+            # 'creditamount',
+            # 'age',
+            'otherinstallments'
             ]].values
 
        # The dependent / target variable
         y = data[['creditworthy']]
+        
+               
+        # plt.scatter(X, y)
+        # plt.show()
 
        # Preprocessing step
        # Transforming the textual data to numbers
@@ -63,3 +70,38 @@ class Process:
         y = np.array(y)
 
         return X, y
+
+
+    # Retrieving variables using
+    # Recursive Feature Elimination
+    # RFE with the logistic regression algorithm to select the top 3 features.
+    def RetrieveVariablesByRFE(self):
+        
+        df = pd.read_excel(self.fileName, sheet_name = self.sheetName)
+        array = df.values
+        
+        le = LabelEncoder()
+        for i in range(21):
+            array[:,i] = le.fit_transform(array[:,i])
+    
+        X = array[:, 0:19]
+        y = array[:, 20]
+        y = y.astype('int')
+
+    
+        # feature extraction
+        model = LogisticRegression(solver='lbfgs')
+       
+        # getting the four most important features
+        rfe = RFE(model, 4)
+     
+        fit = rfe.fit(X, y)
+        
+        print("Num Features: %d" % fit.n_features_)
+        print("Selected Features: %s" % fit.support_)
+        print("Feature Ranking: %s" % fit.ranking_)
+        
+        # Based on RFE , Columns 1, 2, 5, 9 are important
+        
+        
+

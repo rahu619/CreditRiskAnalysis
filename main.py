@@ -23,9 +23,13 @@ fileName = 'CustomerData.xlsx'
 sheetName = 'Retrieve CustomerCreditRiskData'
 
 # In an ideal scenario, dataplot could happen before choosing the apt algorithm
+
+
+# Selected features and knn prediction
+
 processObj = Process(fileName, sheetName)
 
-X, y = processObj.RetriveVariablesPostManualProcessing()
+X, y = processObj.RetrieveVariablesManually()
 
 # initializing the algorithm class
 algorithmObj = Algorithm(usePersistedModel = True)
@@ -37,10 +41,17 @@ algorithmObj = Algorithm(usePersistedModel = True)
 accuracy = metrics.accuracy_score(y_test, prediction)
 
 
-print("kNN predictions :", prediction)
-print("kNN accuracy :", accuracy)       
+print("KNN predictions :", prediction)
+print("KNN accuracy :", accuracy)       
+
 
 # seems like we can't achieve over 75% of accuracy with the kNN approach
+
+
+# SVM - if many features
+# ideal for both classification and regression
+
+
 
 
 
