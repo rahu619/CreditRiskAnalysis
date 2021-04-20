@@ -23,50 +23,39 @@ from classifier import Classifier
 # Importing data and retrieving the dataframe
 df = ImportData().df
 
-print('--------------Dataframe Head Info--------------')
+print('-------------- Dataframe Head Info -------------\n')
 print(df.head())
 print()
 
 
 # Instantiating classifiers
-
-# TODO: turn usePersistedModel on after testing
 classifierObj = Classifier(df, usePersistedModel = False)
 
+# Plotting important features.
+# Please check the plots windows in Spyder IDE to view it.
 classifierObj.plotImportantFeatures()
 
+# Getting k-nearest neighbor accuracy score
 classifierObj.knnApproach()
 
+# Getting linear support vector machine accuracy score
 classifierObj.svmApproach()
 
+# Getting random forest decision tree accuracy score
 classifierObj.randomForestApproach()
 
 
-# Analysing Features/ Predictor variables
-
-# processObj.RetrieveVariablesByRFE()
-
-# X, y = processObj.RetrieveVariablesManually()
-
-# # initializing the algorithm class
-# algorithmObj = Algorithm(usePersistedModel = True)
-
-# # Executing and evaluating prediction score
-
-# # trying knn prediction
-# algorithmObj.KNNApproach(X, y)    
-
-
-# # seems like we can't achieve over 75% of accuracy with the KNN approach
-
+# seems like we can't achieve over 75% of accuracy with the 
+# Random Forest Decision Tree approach
 
 
 # SVM - if there are many features
 # potentially ideal for both classification and regression
 # Trying 5 fold cross validation as well, instead of train,test and split 
-# as the samples we have are limited 
+# as the samples we have are limited
+ 
 # Potential downsides will be more computational power
-# algorithmObj.SVMApproach(X, y)
+
 
 
 

@@ -7,15 +7,20 @@ Created on Mon Mar 22 13:16:06 2021
 @author: Rahul
 """
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_predict
-from sklearn.preprocessing import LabelEncoder
+from persistence import Persistence
+import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn import svm
 from sklearn import neighbors
-from persistence import Persistence
+from sklearn.svm import LinearSVC
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_predict
+
+
 
 class Classifier:
 
@@ -37,7 +42,7 @@ class Classifier:
         
        # The independent / predictor variables
         self.X = self.df[[
-            'creditamount',
+            'creditamout_per_month',
             'status',            
             'age',
             'duration',
@@ -45,11 +50,8 @@ class Classifier:
             'credithistory'
             ]].values
 
-
        # The dependent / target variable
         self.y = self.df[['creditworthy']]
-                 
-       # TODO: plot data?
 
        # Preprocessing step 
        # Transforming the textual data to numbers
@@ -73,19 +75,15 @@ class Classifier:
     # TODO: Dimensionalty Reduction
     def knnApproach(self):
         
-        print("-------------KNN Algorithm-------------------")
-        print()
-        
-        # Dimenionsality reduction
-        # create model
+        print("------------- KNN Algorithm -------------------\n") 
+        # Dimenionsality reduction could be introduced
         
         # The optimal 'K' value will be square root of N
         # where N is the no:of samples 
         # since we have 988 samples; the K value will be ~31
 
         # Nearest neighbour classifier
-        knn = neighbors.KNeighborsClassifier(n_neighbors=31,
-                weights='uniform')
+        knn = neighbors.KNeighborsClassifier(n_neighbors=31, weights='uniform')
 
         # Allocating 20% of the data sample as test data
         (X_train, X_test, y_train, y_test) = train_test_split(self.X, self.y, test_size=0.2)
@@ -94,57 +92,43 @@ class Classifier:
         knn.fit(X_train, np.ravel(y_train, order='C'))
         
         self.PersistModel('kNN', knn) # persisting model
-                
         prediction = knn.predict(X_test)
-
         accuracy = metrics.accuracy_score(y_test, prediction)
-
-        # print("KNN predictions :", prediction)
-        print("KNN accuracy : %0.2f" % accuracy)       
-        print()
+        print("KNN accuracy : %0.2f \n" % accuracy)       
 
 
-    # Using Linear SVM 
-    # Using Cross validation instead of train_test_split method
-    def svmApproach(self):
+    # Using Linear SVC instead of SVC class as it has a much slower performance
+    def svmApproach(self):        
+        print("------------- SVM Algorithm -------------------\n")
         
-        print("-------------SVM Algorithm-------------------")
-        print()
-
-        # Added hyperparameter c setting
-        # yet to be optimized
-        clf = svm.SVC(verbose=True, kernel='linear', C = 1)
-
-        # Trying 5 fold cross validation
+        clf = make_pipeline(StandardScaler(),
+                            LinearSVC(random_state=0, tol=1e-5))
+        # Trying 5 fold cross validation instead of train_test_split method
         predicted = cross_val_predict(clf, self.X, np.ravel(self.y, order='C'), cv = 5)
-        
         accuracy = metrics.accuracy_score(self.y, predicted)
-
-        print("\nSVM Accuracy: %0.2f" % accuracy)
+        print("Linear SVM Accuracy: %0.2f \n" % accuracy)
+            
         
-        
+    # Random Forest Decision Tree   
     def randomForestApproach(self, X = None, y = None):
-        if X is None or y is None:
+        isPlot = (X is not None and y is not None)
+        if not isPlot:
             X = self.X
-            y = self.y
-            print('------------Random Forest Algorithm----------------')
+            y = self.y 
             
         # Create decision tree classifer object
-        clf = RandomForestClassifier(random_state=0, n_jobs=-1)
+        # Tweaking hyper parameters for optimal prediction
+        clf = RandomForestClassifier(n_estimators = 90, random_state = 0, n_jobs = -1)
         
-        # Train model
-        model = clf.fit(X, np.ravel(y, order='C'))
-        
-        
-        # Trying 5 fold cross validation
-        predicted = cross_val_predict(clf, X, np.ravel(y, order='C'), cv=5)
-        
-        accuracy = metrics.accuracy_score(y, predicted)
-        
-        print("Random Forest accuracy : %0.2f" % accuracy)       
-        print()
-        
-        return model
+        # Only performing 3-fold cross validation, if it's not to plot 
+        # a feature importance graph 
+        if not isPlot:
+            predicted = cross_val_predict(clf, X, np.ravel(y, order='C'), cv = 5)            
+            accuracy = metrics.accuracy_score(y, predicted)
+            print('------------ Random Forest Algorithm ----------------\n')            
+            print("Random Forest accuracy : %0.2f \n" % accuracy)
+           
+        return clf
     
     # Using random forest to achieve this.
     # Considering all input variables so that we could create a bar chart to identify
@@ -163,7 +147,7 @@ class Classifier:
         X = array[:, 0:20]
         y = array[:, 21]
         
-               # The dependent / target variable
+        # The dependent / target variable
         y = self.df[['creditworthy']]
         
        # Preprocessing step
@@ -177,19 +161,15 @@ class Classifier:
 
        # transforming y
         label_mapping = {'Not Worthy': 0, 'Worthy': 1}
-
         y = y.copy()
         y['creditworthy'] = y['creditworthy'].map(label_mapping)
         y = np.array(y)
 
-       # passing in predictor and target variables into our RFA method
-        model = self.randomForestApproach(X, y)
-        
-        # Calculate feature importances
-        importances = model.feature_importances_
-        
-        # Sort feature importances in descending order
-        indices = np.argsort(importances)[::-1]
+        # passing in predictor and target variables into our RFA method
+        clf = self.randomForestApproach(X, y) 
+        model = clf.fit(X, np.ravel(y, order='C')) # Training model       
+        importances = model.feature_importances_   # Calculating feature importances
+        indices = np.argsort(importances)[::-1]    # Sorting feature importances in descending order
         
         # Rearrange feature names so they match the sorted feature importances
         names = [self.df.columns[i] for i in indices]
@@ -201,12 +181,15 @@ class Classifier:
         # Add feature names as x-axis labels
         plt.xticks(range(X.shape[1]), names, rotation=20, fontsize = 8)
         # Create plot title
-        plt.title("Feature Importance")
+        plt.title("Feature Importance")  
+        
+        # Based on plot the top predictor variables are
+        # Credit amount per month, Status, Age, Duration, Purpose, Credit History
+        
         # Show plot
         plt.show()
     
-        # Based on plot the important predictor variables
-        # are Creit amount, Status, Age, Duration, Purpose, Credit History
+       
     
         
     # Persisting the model so that we could use the
