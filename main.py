@@ -11,45 +11,65 @@ Created on Mon Mar 22 11:25:32 2021
 
 import pandas as pd
 from sklearn import metrics
-from process import Process
-from algorithms import Algorithm
+from importData import ImportData
+from classifier import Classifier
 
 
 # Trying to predict if the customer is creditworthy
 # As it's already labelled ; we'll use supervised M.L. 
-# and since it's a category ('Worthy' or 'Not worthy'), it'll fall under Classification problem
+# and since it's a category ('Worthy' or 'Not worthy'), it'll fall under 
+# a Classification problem
 
-fileName = 'CustomerData.xlsx'
-sheetName = 'Retrieve CustomerCreditRiskData'
+# Importing data and retrieving the dataframe
+df = ImportData().df
 
-# In an ideal scenario, dataplot could happen before choosing the apt algorithm
-
-
-# Selected features and knn prediction
-
-processObj = Process(fileName, sheetName)
-
-X, y = processObj.RetrieveVariablesManually()
-
-# initializing the algorithm class
-algorithmObj = Algorithm(usePersistedModel = True)
-
-# Evaluating prediction score
-[X_train, X_test, y_train, y_test], prediction = algorithmObj.KNNApproach(X, y)
-
-# TODO: refactor this later. Maybe introduce a Evaluate class
-accuracy = metrics.accuracy_score(y_test, prediction)
+print('--------------Dataframe Head Info--------------')
+print(df.head())
+print()
 
 
-print("KNN predictions :", prediction)
-print("KNN accuracy :", accuracy)       
+# Instantiating classifiers
+
+# TODO: turn usePersistedModel on after testing
+classifierObj = Classifier(df, usePersistedModel = False)
+
+classifierObj.plotImportantFeatures()
+
+classifierObj.knnApproach()
+
+classifierObj.svmApproach()
+
+classifierObj.randomForestApproach()
 
 
-# seems like we can't achieve over 75% of accuracy with the kNN approach
+# Analysing Features/ Predictor variables
+
+# processObj.RetrieveVariablesByRFE()
+
+# X, y = processObj.RetrieveVariablesManually()
+
+# # initializing the algorithm class
+# algorithmObj = Algorithm(usePersistedModel = True)
+
+# # Executing and evaluating prediction score
+
+# # trying knn prediction
+# algorithmObj.KNNApproach(X, y)    
 
 
-# SVM - if many features
-# ideal for both classification and regression
+# # seems like we can't achieve over 75% of accuracy with the KNN approach
+
+
+
+# SVM - if there are many features
+# potentially ideal for both classification and regression
+# Trying 5 fold cross validation as well, instead of train,test and split 
+# as the samples we have are limited 
+# Potential downsides will be more computational power
+# algorithmObj.SVMApproach(X, y)
+
+
+
 
 
 
