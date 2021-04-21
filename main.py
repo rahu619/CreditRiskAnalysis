@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 22 11:25:32 2021
+Created on Mon Apr 12 11:25:32 2021
 
 @author: Rahul
 """
 
-# Attempt kNN and then SVM
-# compare the accuracies
-# if more datapoints or datapoints overlap -> SVM
 import numpy as np;
 import pandas as pd
-
 from sklearn import metrics
 from processData import ProcessData
 from classifier import Classifier
 from IPython import get_ipython
 
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # Helper method to intialize and return classifier class object
@@ -84,14 +80,12 @@ def main():
     # SVM - if there are many features
     # potentially ideal for both classification and regression
     # Trying 5 fold cross validation as well, instead of train,test and split 
-    # as the samples we have are limited
-     
+    # as the samples we have are limited     
     # Potential downsides will be more computational power
 
 
 
-
-# Just to make sure this class can't be imported but executed
+# Just to make sure this class can't be imported but executed alone
 # as it's the entry point
 if __name__ == '__main__':
     main()

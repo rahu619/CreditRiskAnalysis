@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Created on Wed Mar 24 10:36:08 2021
+Created on Mon Apr 12 12:36:08 2021
 
 @author: Rahul
 """
@@ -55,7 +55,7 @@ class ProcessData:
     def printDataQuality(self):
         print("--------------- Validating if there are NULL values ----------------\n")
         print(self.df.info()) # We could verify if there are any null values
-        print('--------------- Dataframe Head Info ----------------\n')
+        print('--------------- Dataframe First 5 rows ----------------\n')
         print(self.df.head())
         print()        
         print('--------------- Validating Multivariate outliers in n-dimensional space ----------------\ \n')
@@ -72,6 +72,7 @@ class ProcessData:
 
     # For visualizing outliers in our top features
     # Helps us to understand the variability from lower and upper quartiles
+    # from the mean, std values 
     def visualizeOutliers(self, features): 
         print("--------------- Visualizing outliers ----------------\n")
         filtered_df = pd.DataFrame(data = np.random.random(size=(6,6)), columns = features)
