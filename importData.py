@@ -8,13 +8,11 @@ Created on Wed Mar 24 10:36:08 2021
 """
 import numpy as np
 import pandas as pd
-
+from sklearn import metrics
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
-
 from sklearn.model_selection import cross_val_predict
-from sklearn import metrics
 
 # Imports the dataset and returns the dataframe object
 class ImportData:
@@ -24,9 +22,29 @@ class ImportData:
     df = None
     
     def __init__(self):
-        self.df = pd.read_excel(self.fileName, sheet_name = self.sheetName)       
-        self.validatingDataQuality();
+        self.df = pd.read_excel(self.fileName, sheet_name = self.sheetName)  
+        self.transformingCategories()
+        self.validatingDataQuality()
         
+        
+    def transformingCategories(self):
+        LE = LabelEncoder()
+        #Transforming predictor variables 
+        self.df['status'] = LE.fit_transform(self.df['status'])
+        self.df['foreignworker'] = LE.fit_transform(self.df['foreignworker'])
+        self.df['purpose'] = LE.fit_transform(self.df['purpose'])
+        self.df['gender'] = LE.fit_transform(self.df['gender'])
+        self.df['job'] = LE.fit_transform(self.df['job'])
+        self.df['employmentsince'] = LE.fit_transform(self.df['employmentsince'])
+        self.df['otherdebtors'] = LE.fit_transform(self.df['otherdebtors'])
+        self.df['otherinstallments'] = LE.fit_transform(self.df['otherinstallments'])
+        self.df['property'] = LE.fit_transform(self.df['property'])
+        self.df['savings'] = LE.fit_transform(self.df['savings'])
+        self.df['credithistory'] = LE.fit_transform(self.df['credithistory']) 
+        
+        #Transforming target variable
+        self.df['creditworthy'] = LE.fit_transform(self.df['creditworthy'])
+
     # verifying data quality
     def validatingDataQuality(self):
         print("---------------------------------------------------------------")
@@ -41,45 +59,5 @@ class ImportData:
     def dataFrame(self):
         return self.df       
         
-    def RetrieveVariablesManually(self):
-        # print(data.head(n=2))
-        # print(data.dtypes)
-       
-       # The independent / predictor variables
-        X = self.df[[
-            'foreignworker',
-            'status',            
-            'credithistory',
-            'savings',
-            'employmentsince',
-            'creditamount',
-            'age',
-            'otherinstallments'
-            ]].values
-
-       # The dependent / target variable
-        y = self.df[['creditworthy']]
-        
-               
-        # plt.scatter(X, y)
-        # plt.show()
-
-       # Preprocessing step
-       # Transforming the textual data to numbers
-       # as we can't the data directly into the algorithm
-        Le = LabelEncoder()
-
-       # transforming X column wise
-        for i in range(len(X[0])):
-            X[:, i] = Le.fit_transform(X[:, i])
-
-       # transforming y
-        label_mapping = {'Not Worthy': 0, 'Worthy': 1}
-
-        y = y.copy()
-        y['creditworthy'] = y['creditworthy'].map(label_mapping)
-        y = np.array(y)
-        
-        return X, y
 
 

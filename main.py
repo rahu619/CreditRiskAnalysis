@@ -10,28 +10,36 @@ Created on Mon Mar 22 11:25:32 2021
 # if more datapoints or datapoints overlap -> SVM
 
 import pandas as pd
+import seaborn as sns
 from sklearn import metrics
 from importData import ImportData
 from classifier import Classifier
-
 
 # Trying to predict if the customer is creditworthy
 # As it's already labelled ; we'll use supervised M.L. 
 # and since it's a category ('Worthy' or 'Not worthy'), it'll fall under 
 # a Classification problem
 
-# Importing data and retrieving the dataframe
+# Retrieving the imported, tranformed dataframe 
 df = ImportData().df
 
-print('-------------- Dataframe Head Info -------------\n')
-print(df.head())
-print()
+# print('-------------- Dataframe Head Info -------------\n')
+# print(df.head())
+# print()
 
+# print('---- Validating Multivariate outliers in n-dimensional space ... \n')
+# print(df.describe())
+# print()
+
+# seems like we have lot of points for credit amount outside the box of observation    
+# sns.boxplot(x=df['creditamount'])
+# sns.boxplot(x=df['status'])
+# sns.boxplot(x=df['age'])
 
 # Instantiating classifiers
 classifierObj = Classifier(df, usePersistedModel = False)
 
-# Plotting important features.
+# # Plotting important features.
 # Please check the plots windows in Spyder IDE to view it.
 classifierObj.plotImportantFeatures()
 

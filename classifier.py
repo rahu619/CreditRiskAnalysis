@@ -20,8 +20,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_predict
 
-
-
 class Classifier:
 
     usePersistedModel = False
@@ -37,39 +35,22 @@ class Classifier:
     
     # Intializing predictor and target variables
     # Features will chosen manually 
-    # based on our analysis done earlier.
+    # based on our analysis done using Feature importance plotting.
     def initializeVariables(self):   
         
        # The independent / predictor variables
         self.X = self.df[[
-            'creditamout_per_month',
             'status',            
-            'age',
             'duration',
+            'creditamount',
+            'credithistory',
+            'savings',
             'purpose',
-            'credithistory'
             ]].values
 
        # The dependent / target variable
         self.y = self.df[['creditworthy']]
-
-       # Preprocessing step 
-       # Transforming the textual data to numbers
-       # as we can't the data directly into the algorithm
-        Le = LabelEncoder()
-
-       # transforming X column wise
-        for i in range(len(self.X[0])):
-            self.X[:, i] = Le.fit_transform(self.X[:, i])
-
-       # transforming y column
-        label_mapping = {'Not Worthy': 0, 'Worthy': 1}
-
-        self.y = self.y.copy()
-        self.y['creditworthy'] = self.y['creditworthy'].map(label_mapping)
-        self.y = np.array(self.y)
-        
-        
+                
         
     # using KNN algorithm
     # TODO: Dimensionalty Reduction
@@ -102,7 +83,7 @@ class Classifier:
         print("------------- SVM Algorithm -------------------\n")
         
         clf = make_pipeline(StandardScaler(),
-                            LinearSVC(random_state=0, tol=1e-5))
+                            LinearSVC(random_state=0, tol=1e-5, dual=False))
         # Trying 5 fold cross validation instead of train_test_split method
         predicted = cross_val_predict(clf, self.X, np.ravel(self.y, order='C'), cv = 5)
         accuracy = metrics.accuracy_score(self.y, predicted)
@@ -118,7 +99,7 @@ class Classifier:
             
         # Create decision tree classifer object
         # Tweaking hyper parameters for optimal prediction
-        clf = RandomForestClassifier(n_estimators = 90, random_state = 0, n_jobs = -1)
+        clf = RandomForestClassifier(n_estimators = 120, max_depth = 4, random_state = 0, n_jobs = -1)
         
         # Only performing 3-fold cross validation, if it's not to plot 
         # a feature importance graph 
@@ -149,22 +130,7 @@ class Classifier:
         
         # The dependent / target variable
         y = self.df[['creditworthy']]
-        
-       # Preprocessing step
-       # Transforming the textual data to numbers
-       # as we can't the data directly into the algorithm
-        Le = LabelEncoder()
-
-       # transforming X column wise
-        for i in range(len(X[0])):
-            X[:, i] = Le.fit_transform(X[:, i])
-
-       # transforming y
-        label_mapping = {'Not Worthy': 0, 'Worthy': 1}
-        y = y.copy()
-        y['creditworthy'] = y['creditworthy'].map(label_mapping)
-        y = np.array(y)
-
+      
         # passing in predictor and target variables into our RFA method
         clf = self.randomForestApproach(X, y) 
         model = clf.fit(X, np.ravel(y, order='C')) # Training model       
@@ -172,16 +138,15 @@ class Classifier:
         indices = np.argsort(importances)[::-1]    # Sorting feature importances in descending order
         
         # Rearrange feature names so they match the sorted feature importances
-        names = [self.df.columns[i] for i in indices]
-        
+        names = [self.df.columns[i] for i in indices]        
         # print('importances: ', names)
-          
-        # Barplot: Add bars
+
+        # Barplot
         plt.bar(range(X.shape[1]), importances[indices])
         # Add feature names as x-axis labels
         plt.xticks(range(X.shape[1]), names, rotation=20, fontsize = 8)
         # Create plot title
-        plt.title("Feature Importance")  
+        plt.title("Feature Importance Chart")  
         
         # Based on plot the top predictor variables are
         # Credit amount per month, Status, Age, Duration, Purpose, Credit History
@@ -189,7 +154,6 @@ class Classifier:
         # Show plot
         plt.show()
     
-       
     
         
     # Persisting the model so that we could use the
