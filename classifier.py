@@ -30,24 +30,13 @@ class Classifier:
     def __init__(self, df, usePersistedModel):
         self.df = df
         self.usePersistedModel = usePersistedModel
-        self.initializeVariables()
         
-    
     # Intializing predictor and target variables
     # Features will chosen manually 
     # based on our analysis done using Feature importance plotting.
-    def initializeVariables(self):   
-        
+    def initializeVariables(self, features):           
        # The independent / predictor variables
-        self.X = self.df[[
-            'status',            
-            'duration',
-            'creditamount',
-            'credithistory',
-            'savings',
-            'purpose',
-            ]].values
-
+        self.X = self.df[features].values
        # The dependent / target variable
         self.y = self.df[['creditworthy']]
                 
@@ -57,23 +46,22 @@ class Classifier:
     def knnApproach(self):
         
         print("------------- KNN Algorithm -------------------\n") 
-        # Dimenionsality reduction could be introduced
-        
+        # Dimenionsality reduction could also be introduced
         # The optimal 'K' value will be square root of N
         # where N is the no:of samples 
         # since we have 988 samples; the K value will be ~31
 
         # Nearest neighbour classifier
-        knn = neighbors.KNeighborsClassifier(n_neighbors=31, weights='uniform')
+        clf = neighbors.KNeighborsClassifier(n_neighbors=31, weights='uniform')
 
         # Allocating 20% of the data sample as test data
         (X_train, X_test, y_train, y_test) = train_test_split(self.X, self.y, test_size=0.2)
 
         # Fitting model
-        knn.fit(X_train, np.ravel(y_train, order='C'))
+        clf.fit(X_train, np.ravel(y_train, order='C'))
         
-        self.PersistModel('kNN', knn) # persisting model
-        prediction = knn.predict(X_test)
+        self.PersistModel('kNN', clf) # persisting model
+        prediction = clf.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, prediction)
         print("KNN accuracy : %0.2f \n" % accuracy)       
 
@@ -115,6 +103,7 @@ class Classifier:
     # Considering all input variables so that we could create a bar chart to identify
     # the most important ones.
     def plotImportantFeatures(self):
+        print("--------------- Plotting important features ----------------\n")
         cols = list(self.df.columns.values) #Make a list of all of the columns in the df
         cols.pop(cols.index('creditworthy')) #Remove b from list
         self.df = self.df[cols+['creditworthy']] #Create new dataframe with columns in the order you want
