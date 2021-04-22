@@ -15,6 +15,7 @@ A comparison between the following Supervised classification machine learning al
 - Linear Support Vector Machine
 - Random Forest Decision Tree
 
+# Execution Steps
 
 > **Spyder IDE**
 >     Please choose the main.py file and run it to view the output in console. The graph charts will be inline and most probably overlapped over another in the Plots window. Please remove a plot (Ctrl+W) to view the previous one.
