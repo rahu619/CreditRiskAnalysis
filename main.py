@@ -12,7 +12,7 @@ from processData import ProcessData
 from classifier import Classifier
 from IPython import get_ipython
 
-# get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('matplotlib', 'inline')
 # While viewing plots, please remove the current plot to view the previous one 
 
 # Helper method to intialize and return classifier class object
