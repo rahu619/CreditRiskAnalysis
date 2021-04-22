@@ -133,10 +133,10 @@ class Classifier:
         # Barplot
         plt.bar(range(X.shape[1]), importances[indices])
         # Add feature names as x-axis labels
-        plt.xticks(range(X.shape[1]), names, rotation=20, fontsize = 8)
+        plt.xticks(range(X.shape[1]), names, rotation=90, fontsize = 9)
         # Create plot title
         plt.title("Feature Importance Chart")  
-        
+        plt.tight_layout()
         # Based on plot the top predictor variables are
         # Credit amount per month, Status, Age, Duration, Purpose, Credit History
         

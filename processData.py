@@ -59,7 +59,7 @@ class ProcessData:
         print(self.df.head())
         print()        
         print('--------------- Validating Multivariate outliers in n-dimensional space ----------------\ \n')
-        print(self.df.describe())
+        print(self.df.describe()) # from the mean, std values 
         print()
         
         
@@ -72,15 +72,21 @@ class ProcessData:
 
     # For visualizing outliers in our top features
     # Helps us to understand the variability from lower and upper quartiles
-    # from the mean, std values 
     def visualizeOutliers(self, features): 
         print("--------------- Visualizing outliers ----------------\n")
-        filtered_df = pd.DataFrame(data = np.random.random(size=(6,6)), columns = features)
-        sns.boxplot(x="variable", y="value", data=pd.melt(filtered_df))
+        filtered_df = pd.DataFrame(data = np.random.random(size=(7,7)), columns = features)
+        sns.boxplot(x="variable", y="value", data=pd.melt(filtered_df), showfliers=False)
+        plt.title('Data distribution for the selected features')
+        plt.tight_layout()
         plt.show()
+
+        # Plotting box plots for each shortlisted feature
+        for feature in features:
+            plt.figure()
+            plt.title(f'Plotting outliers for {feature} feature')
+            self.df.boxplot([feature])
         # seems like we have lot of points for credit amount outside the box of observation 
-        
-        
+       
     # Getter for Dataframe  
     @property
     def getdataFrame(self):

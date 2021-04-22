@@ -13,7 +13,7 @@ from classifier import Classifier
 from IPython import get_ipython
 
 # get_ipython().run_line_magic('matplotlib', 'inline')
-
+# While viewing plots, please remove the current plot to view the previous one 
 
 # Helper method to intialize and return classifier class object
 def initializeClassifier(df, features = None):
@@ -31,7 +31,7 @@ def main():
     # and since it's a category ('Worthy' or 'Not worthy'), it'll fall under 
     # a Classification problem
     
-    # Retrieving the imported, tranformed dataframe 
+    # Step 1: Retrieving the imported, tranformed dataframe 
     processDataObj = ProcessData()
     df = processDataObj.getdataFrame
 
@@ -41,25 +41,29 @@ def main():
     # Plotting important features.
     classifierObj.plotImportantFeatures()
     
-    # Based on the above Feature Importance bar chart, we have identified the top features
+    # Step 2: Based on the above Feature Importance bar chart, we have 
+    # identified the top features
     topFeatures = ['status',         
                     'duration',
                     'creditamount',
                     'credithistory',
+                    'age',
                     'savings',
-                    'purpose'] 
+                    'purpose'
+                    ] 
     
     # Redefining the X, y variables based on our top features
     classifierObj.initializeVariables(topFeatures)
     
-    # Step : Identifying data outliers
-    
-    # Visualizing outliers in our top features
+    # Step 3: Identifying data outliers    
+    # Visualizing the mean, 25th and 75th percentile data points in our top features
+    # and outliers for our top features
     processDataObj.visualizeOutliers(topFeatures)
     
     # Removed outliers and retrieving new filtered dataframe
     filtered_df = processDataObj.removeOutliers()
     
+    # Step 4: Training models and validating accuracies
     # Initializing classifier class again with our filtered dataframe
     initializeClassifier(filtered_df)
     
@@ -77,8 +81,7 @@ def main():
     # seems like we can't achieve over 75% of accuracy with the 
     # Random Forest Decision Tree approach
     
-    # SVM - if there are many features
-    # potentially ideal for both classification and regression
+    # SVM - if there are many features and potentially ideal for both classification and regression
     # Trying 5 fold cross validation as well, instead of train,test and split 
     # as the samples we have are limited     
     # Potential downsides will be more computational power
